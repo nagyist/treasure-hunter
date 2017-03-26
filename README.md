@@ -1,0 +1,1 @@
+## Pixi.js game indegrated into Ionic 2 app.
