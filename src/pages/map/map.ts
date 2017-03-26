@@ -10,6 +10,9 @@ declare var google;
 })
 export class MapPage {
 
+  private latitude: number;
+  private longitude: number;
+
   constructor(public navCtrl: NavController, private geolocation: Geolocation) { }
 
   ngAfterViewInit() {
@@ -22,10 +25,11 @@ export class MapPage {
 
     let watch = this.geolocation.watchPosition();
     watch.subscribe((data) => {
-    // data can be a set of coordinates, or an error (if an error occurred).
-    // data.coords.latitude
-    // data.coords.longitude
-      console.log(data.coords.latitude, data.coords.longitude);
+      // data can be a set of coordinates, or an error (if an error occurred).
+      // data.coords.latitude
+      // data.coords.longitude
+      this.latitude = data.coords.latitude;
+      this.longitude = data.coords.longitude;
     });
   }
 }
