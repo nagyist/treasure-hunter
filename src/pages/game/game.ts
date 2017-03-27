@@ -20,7 +20,7 @@ export class GamePage {
 
   initializeApp() {
     // create a new app
-    this.app = new PIXI.Application(this.getCanvasWidth(), this.getCanvasHeight(), {backgroundColor : 0x1099bb});
+    this.app = new PIXI.Application(this.getCanvasWidth(), this.getCanvasHeight(), {backgroundColor : 0xA8AC91});
     this.canvas.appendChild(this.app.view);
   }
 
