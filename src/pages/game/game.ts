@@ -9,105 +9,84 @@ import { Howl } from 'howler';
 })
 export class GamePage {
 
-  private renderer;
+  private app: any;
+  private state: () => void;
   private canvasContainer: HTMLElement;
-  private soundtrack;
 
   constructor(public navCtrl: NavController) {}
 
   ngAfterViewInit() {
+    // Get the canvas container HTML element
     this.canvasContainer = document.getElementById('pixi-canvas-container');
-    this.soundtrack = new Howl({
-      src: ['assets/sounds/MarimbaBoy.wav', 'assets/sounds/MarimbaBoy.ogg'],
-      loop: true,
-      volume: 0.5,
-    });
-    this.soundtrack.pause();
-    this.initializeGame();
-  }
 
-  initializeGame() {
+    // Create the app 
+    this.app = new PIXI.Application(this.getCanvasWidth(), this.getCanvasHeight(), {backgroundColor : 0xA8AC91});
 
-    //Aliases
-    let Container = PIXI.Container,
-      autoDetectRenderer = PIXI.autoDetectRenderer,
-      loader = PIXI.loader,
-      resources = PIXI.loader.resources,
-      Sprite = PIXI.Sprite;
+    // Add the app.view to the HTML document
+    this.canvasContainer.appendChild(this.app.view);
 
-    // Define any variables that are used in more than one function 
-    let pirate, soundOn;
     //Set the game's current state to `play`:
-    let state = play;
+    this.state = this.play;
 
-    // Create the renderer 
-    this.renderer = autoDetectRenderer(this.getCanvasWidth(), this.getCanvasHeight());
+    // TITLE
+    var style = new PIXI.TextStyle({
+        fontFamily: 'Times New Roman',
+        fontSize: 42,
+        fontStyle: 'normal',
+        fontWeight: 'bold',
+        fill: ['#ffffff', '#A45D42'], // gradient
+        stroke: '#A3A78D',
+        strokeThickness: 4,
+        dropShadow: true,
+        dropShadowColor: '#000000',
+        dropShadowBlur: 2,
+        dropShadowAngle: Math.PI / 6,
+        dropShadowDistance: 6,
+        wordWrap: true,
+        wordWrapWidth: 440
+    });
+    const title = new PIXI.Text('Treasure Hunter', style);
+    title.anchor.set(0.5);
+    title.x = this.app.renderer.width / 2;
+    title.y = this.app.renderer.height / 2 - 200;
+    this.app.stage.addChild(title);
 
-    // Add the canvas to the HTML document
-    this.canvasContainer.appendChild(this.renderer.view);
-
-    // Create a container object called the `stage`
-    let stage = new Container();
-
-    //  Change the background color of the canvas 
-    this.renderer.backgroundColor = 0xA8AC91;
-
-    //Use Pixi's built-in `loader` object to load an image
-    loader
-      .add("assets/images/pirate.png")
-      .add("assets/images/sound-on.png")
-      .load(setup);
+    // PIRATE
+    // create a new Sprite from an image path
+    const pirate = PIXI.Sprite.fromImage('assets/images/pirate.png')
     
-    //This `setup` function will run when the image has loaded
-    function setup() {
+    // center the sprite's anchor point
+    pirate.anchor.set(0.5);
 
-      //Create the sprite from the texture
-      pirate = new Sprite(resources["assets/images/pirate.png"].texture);
+    // Change the sprite's position - move the sprite to the center of the screen
+    pirate.x = this.app.renderer.width / 2;
+    pirate.y = this.app.renderer.height / 2;;
 
-      //Change the sprite's position
-      pirate.x = 0;
-      pirate.y = 0;
+    //Change the sprite's size
+    pirate.width = 160;
+    pirate.height = 164;
 
-      //Change the sprite's size
-      pirate.width = 80;
-      pirate.height = 82;
-
-      //Initialize the sprites's velocity variables
-      pirate.vx = 0;
-      pirate.vy = 0;
-
-      //Add the sprite to the stage
-      stage.addChild(pirate);
-
-      //Add the sprite to the stage
-      stage.addChild(soundOn);
-
-      //Call the `gameLoop` function once to get it started 
-      gameLoop();
-    }
+    //Add the sprite to the stage
+    this.app.stage.addChild(pirate);
 
     // Tell the `renderer` to `render` the `stage`
-    let gameLoop = () => {
+    var gameLoop = () => {
       // Loop this function 60 times per second
       requestAnimationFrame(gameLoop);
 
       //Update the current game state:
-      state();
+      this.state();
 
       // Render the stage
-      this.renderer.render(stage);
+      this.app.renderer.render(this.app.stage);
     }
 
-    function play() {
-      //Update the sprite's velocity
-      pirate.vx = 1;
-      pirate.vy = 1;
-    
-      //Apply the velocity values to the sprite's position to make it move
-      pirate.x += pirate.vx;
-      pirate.y += pirate.vy;
-    }
+    //Call the `gameLoop` function once to get it started 
+    gameLoop();
+  }
 
+  play() {
+    console.log('playing...')
   }
 
   getCanvasWidth() {
@@ -119,7 +98,8 @@ export class GamePage {
   }
 
   adjustCanvasSize(){
-    this.renderer.resize(this.getCanvasWidth(), this.getCanvasHeight());
+    if (this.app != undefined)
+      this.app.renderer.resize(this.getCanvasWidth(), this.getCanvasHeight());
   }
 
 }
